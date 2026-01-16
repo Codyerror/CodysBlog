@@ -1,15 +1,15 @@
 import { allPosts } from '@/lib/contentlayer'
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
 import { PostCard } from '@/components/post-card'
+import { getMessage } from '@/lib/i18n'
 
 export default function HomePage({ params: { locale } }: { params: { locale: string } }) {
-  const t = useTranslations()
+  const t = (key: string) => getMessage(locale, key)
   const posts = allPosts
-    .filter((post) => post.locale === locale)
+    .filter((post: any) => post.locale === locale)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 6)
-
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <section className="text-center py-16">
@@ -22,7 +22,7 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
       <section>
         <h2 className="text-3xl font-bold mb-8">{t('post.readMore')}</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
+          {posts.map((post: any) => (
             <PostCard key={post._id} post={post} locale={locale} />
           ))}
         </div>

@@ -1,12 +1,15 @@
+'use client'
 import Link from 'next/link'
-import { useTranslations, useLocale } from 'next-intl'
 import { ThemeToggle } from './theme-toggle'
 import { LanguageSwitcher } from './language-switcher'
+import { getMessage } from '@/lib/i18n'
+import { usePathname } from 'next/navigation'
 
 export function Header() {
-  const t = useTranslations('nav')
-  const locale = useLocale()
-
+  const pathname = usePathname()
+  const locale = pathname.split('/')[1] || 'zh-CN'
+  const t = (key: string) => getMessage(locale, key)
+  
   return (
     <header className="border-b bg-background sticky top-0 z-10 backdrop-blur-sm bg-opacity-90">
       <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -15,10 +18,10 @@ export function Header() {
         </Link>
         <div className="flex items-center gap-4">
           <Link href={`/${locale}/blog`} className="hover:text-primary transition-colors">
-            {t('blog')}
+            {t('nav.blog')}
           </Link>
           <Link href={`/${locale}/about`} className="hover:text-primary transition-colors">
-            {t('about')}
+            {t('nav.about')}
           </Link>
           <LanguageSwitcher />
           <ThemeToggle />

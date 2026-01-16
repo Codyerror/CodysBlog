@@ -1,21 +1,20 @@
 'use client'
-import { useLocale } from 'next-intl'
 import { useRouter, usePathname } from 'next/navigation'
 import { locales } from '@/i18n'
 
 export function LanguageSwitcher() {
-  const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
-
+  const currentLocale = pathname.split('/')[1] || 'zh-CN'
+  
   const handleChange = (newLocale: string) => {
-    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`)
+    const newPath = pathname.replace(`/${currentLocale}`, `/${newLocale}`)
     router.push(newPath)
   }
-
+  
   return (
     <select
-      value={locale}
+      value={currentLocale}
       onChange={(e) => handleChange(e.target.value)}
       className="p-2 rounded-md border bg-transparent cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
     >

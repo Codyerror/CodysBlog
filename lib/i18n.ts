@@ -1,9 +1,8 @@
-import zhCN from './messages/zh-CN.json'
-import en from './messages/en.json'
+import zhCN from '../messages/zh-CN.json'
+import en from '../messages/en.json'
 
 export const locales = ['zh-CN', 'en'] as const
 export const defaultLocale = 'zh-CN'
-export type Locale = (typeof locales)[number]
 
 export const messages = {
   'zh-CN': zhCN,

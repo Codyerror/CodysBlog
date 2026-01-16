@@ -1,15 +1,15 @@
-import { useTranslations } from 'next-intl'
+import { getMessage } from '@/lib/i18n'
 
 export function Footer() {
-  const t = useTranslations('footer')
+  const t = (key: string) => getMessage('zh-CN', key)
   const year = new Date().getFullYear()
-
+  
   return (
     <footer className="border-t mt-16">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            {t('copyright').replace('{year}', year.toString())}
+            {t('footer.copyright').replace('{year}', year.toString())}
           </div>
           <div className="flex gap-4">
             <a

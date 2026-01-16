@@ -1,11 +1,9 @@
 'use client'
 import GiscusComponent from '@giscus/react'
 import { useTheme } from 'next-themes'
-import { useLocale } from 'next-intl'
 
 export function Giscus() {
   const { resolvedTheme } = useTheme()
-  const locale = useLocale()
 
   return (
     <div className="mt-12">
@@ -18,7 +16,7 @@ export function Giscus() {
         mapping="pathname"
         reactionsEnabled="1"
         emitMetadata="0"
-        theme="transparent_dark"
+        theme={resolvedTheme === 'dark' ? 'dark_dimmed' : 'light'}
         lang="zh-CN"
         loading="lazy"
       />
