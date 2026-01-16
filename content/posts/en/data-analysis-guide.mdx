@@ -1,0 +1,79 @@
+---
+title: "Data Analysis Guide for Beginners"
+date: "2025-01-16"
+summary: "This article introduces the basic concepts, tools, and practical methods of data analysis."
+tags: ["data-analysis", "Python", "tutorial"]
+locale: "en"
+---
+
+## Data Analysis Guide for Beginners
+
+Data analysis is the process of extracting valuable information from data. This article will introduce basic concepts and practical methods.
+
+### What is Data Analysis?
+
+Data analysis refers to the process of using statistical and logical techniques to extract information, discover patterns, and make decisions from data.
+
+### Basic Steps
+
+1. **Data Collection**
+2. **Data Cleaning**
+3. **Exploratory Data Analysis (EDA)**
+4. **Data Modeling**
+5. **Results Interpretation**
+
+### Common Tools
+
+#### Python Libraries
+
+- **NumPy** - Numerical computing
+- **Pandas** - Data processing
+- **Matplotlib** - Data visualization
+- **Seaborn** - Statistical visualization
+
+#### Data Example
+
+```python
+import pandas as pd
+import numpy as np
+
+# Create sample data
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie'],
+    'Age': [25, 30, 35],
+    'Score': [85, 92, 78]
+}
+
+df = pd.DataFrame(data)
+print(df.head())
+```
+
+### Data Visualization
+
+Here's a simple data visualization example:
+
+```python
+import matplotlib.pyplot as plt
+
+# Plot chart
+plt.figure(figsize=(10, 6))
+plt.bar(df['Name'], df['Score'])
+plt.title('Scores by Name')
+plt.xlabel('Name')
+plt.ylabel('Score')
+plt.show()
+```
+
+### Best Practices
+
+- Understand business context
+- Data quality first
+- Visualization first
+- Continuous iteration
+
+### Summary
+
+Data analysis is a continuous learning and practice process. I hope this article helps you start your data analysis journey.
+
+---
+*Published: January 16, 2025*

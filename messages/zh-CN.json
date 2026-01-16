@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "home": "首页",
+    "blog": "博客",
+    "about": "关于",
+    "tags": "标签"
+  },
+  "post": {
+    "readMore": "阅读更多",
+    "readingTime": "阅读时间",
+    "publishedAt": "发布于",
+    "tags": "标签",
+    "noPosts": "暂无文章"
+  },
+  "footer": {
+    "copyright": "© {year} CodyInsight. All rights reserved."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "home": "Home",
+    "blog": "Blog",
+    "about": "About",
+    "tags": "Tags"
+  },
+  "post": {
+    "readMore": "Read more",
+    "readingTime": "Reading time",
+    "publishedAt": "Published on",
+    "tags": "Tags",
+    "noPosts": "No posts yet"
+  },
+  "footer": {
+    "copyright": "© {year} CodyInsight. All rights reserved."
+  }
+}
