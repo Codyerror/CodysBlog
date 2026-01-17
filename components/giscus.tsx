@@ -9,13 +9,15 @@ export function Giscus() {
     <div className="mt-12">
       <h3 className="text-2xl font-bold mb-4">Comments</h3>
       <GiscusComponent
-        repo="Codyerror/blog-comments"
-        repoId="R_kgDOQ7C2FQ"
+        repo="Codyerror/CodysBlog"
+        repoId="R_kgDOQ7pwOA"
         category="Announcements"
-        categoryId="DIC_kwDOQ7C2Fc4C1B8W"
+        categoryId="DIC_kwDOQ7pwOM4C1Eqm"
         mapping="pathname"
+        strict="0"
         reactionsEnabled="1"
         emitMetadata="0"
+        inputPosition="bottom"
         theme={resolvedTheme === 'dark' ? 'dark_dimmed' : 'light'}
         lang="zh-CN"
         loading="lazy"

@@ -23,6 +23,9 @@ export function Header() {
           <Link href={`/${locale}/about`} className="hover:text-primary transition-colors">
             {t('nav.about')}
           </Link>
+          <Link href={`/${locale}/admin`} className="hover:text-primary transition-colors text-sm">
+            管理
+          </Link>
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
