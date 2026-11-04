@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Trash2, Edit, Plus } from 'lucide-react'
 
 interface Post {
@@ -18,8 +17,6 @@ export default function AdminPage({ params: { locale } }: { params: { locale: st
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
-  const router = useRouter()
-
   useEffect(() => {
     fetchPosts()
   }, [])
@@ -68,7 +65,7 @@ export default function AdminPage({ params: { locale } }: { params: { locale: st
         <h1 className="text-3xl font-bold">文章管理</h1>
         <Link
           href={`/${locale}/admin/new`}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
+          className="flex items-center gap-2 bg-brand text-white dark:text-[#06201c] px-4 py-2 rounded-lg hover:opacity-90"
         >
           <Plus size={20} />
           新建文章

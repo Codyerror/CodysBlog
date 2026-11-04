@@ -1,15 +1,6 @@
-import zhCN from './messages/zh-CN.json'
-import en from './messages/en.json'
-
-export const locales = ['zh-CN', 'en'] as const
-export const defaultLocale = 'zh-CN'
-export type Locale = (typeof locales)[number]
-
-export const messages = {
-  'zh-CN': zhCN,
-  'en': en
-} as const
-
-export function getMessage(locale: string, key: string): string {
-  return messages[locale as keyof typeof messages]?.[key] || key
-}
+/**
+ * 兼容旧路径：以前部分组件从 `@/i18n` 引入。
+ * 真正的实现统一放在 lib/i18n.ts，避免两份语言包逻辑不一致。
+ */
+export { locales, defaultLocale, messages, getMessage, getDictionary, isLocale } from './lib/i18n'
+export type { Locale } from './lib/i18n'

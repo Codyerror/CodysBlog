@@ -29,30 +29,35 @@ export default function EditPostPage({ params: { locale } }: { params: { locale:
   })
 
   useEffect(() => {
-    fetchPost()
-  }, [locale, slug])
+    let cancelled = false
 
-  const fetchPost = async () => {
-    try {
-      const res = await fetch(`/api/admin/posts?locale=${locale}&slug=${slug}`)
-      if (res.ok) {
-        const data: PostData = await res.json()
-        setFormData({
-          title: data.title,
-          date: data.date,
-          summary: data.summary,
-          tags: data.tags.join(', '),
-          locale: data.locale,
-          content: data.content,
-        })
+    const fetchPost = async () => {
+      try {
+        const res = await fetch(`/api/admin/posts?locale=${locale}&slug=${slug}`)
+        if (res.ok) {
+          const data: PostData = await res.json()
+          if (!cancelled) {
+            setFormData({
+              title: data.title,
+              date: data.date,
+              summary: data.summary,
+              tags: data.tags.join(', '),
+              locale: data.locale,
+              content: data.content,
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching post:', error)
+        if (!cancelled) alert('加载文章失败')
+      } finally {
+        if (!cancelled) setLoading(false)
       }
-    } catch (error) {
-      console.error('Error fetching post:', error)
-      alert('加载文章失败')
-    } finally {
-      setLoading(false)
     }
-  }
+
+    void fetchPost()
+    return () => { cancelled = true }
+  }, [locale, slug])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -122,7 +127,7 @@ export default function EditPostPage({ params: { locale } }: { params: { locale:
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
             placeholder="输入文章标题"
           />
         </div>
@@ -138,7 +143,7 @@ export default function EditPostPage({ params: { locale } }: { params: { locale:
             value={formData.date}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
           />
         </div>
 
@@ -152,7 +157,7 @@ export default function EditPostPage({ params: { locale } }: { params: { locale:
             value={formData.summary}
             onChange={handleChange}
             rows={2}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
             placeholder="输入文章摘要"
           />
         </div>
@@ -167,7 +172,7 @@ export default function EditPostPage({ params: { locale } }: { params: { locale:
             name="tags"
             value={formData.tags}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
             placeholder="例如: 博客, 技术, 教程"
           />
         </div>
@@ -183,7 +188,7 @@ export default function EditPostPage({ params: { locale } }: { params: { locale:
             onChange={handleChange}
             rows={20}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent font-mono"
             placeholder="输入 Markdown 内容..."
           />
         </div>
@@ -192,7 +197,7 @@ export default function EditPostPage({ params: { locale } }: { params: { locale:
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50"
+            className="flex items-center gap-2 bg-brand text-white dark:text-[#06201c] px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50"
           >
             <Save size={20} />
             {saving ? '保存中...' : '保存'}

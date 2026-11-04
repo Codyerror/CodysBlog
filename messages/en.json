@@ -1,18 +1,102 @@
 {
   "nav": {
     "home": "Home",
-    "blog": "Blog",
+    "blog": "Posts",
+    "tags": "Topics",
     "about": "About",
-    "tags": "Tags"
+    "admin": "Admin"
+  },
+  "home": {
+    "kicker": "just a notebook, really",
+    "hello": "Hi, I'm Cody.",
+    "lede": "I write things down so future me doesn't have to google the same thing twice. Data, code, and the occasional cat hair in the keyboard.",
+    "explore": "Read something",
+    "aboutMe": "About me",
+    "surprise": "Pick for me",
+    "latest": "Fresh off the keyboard",
+    "latestHint": "Usually posted after Mochi finally gets off the laptop.",
+    "viewAll": "All posts",
+    "statPosts": "posts",
+    "statTags": "topics",
+    "statWords": "words so far",
+    "empty": "Nothing here yet. Mochi is not helping.",
+    "catCaption": "say hi to Mochi",
+    "catHint": "she follows your cursor · hover to pet her",
+    "catPurr": "purrrrr~",
+    "catTreat": "you found the treat jar!",
+    "soFar": "so far, this notebook has",
+    "subscribeTitle": "No newsletter, promise.",
+    "subscribeText": "There's an RSS feed if you want updates. Or just drop by when you remember.",
+    "petCount": "{count} pets today"
+  },
+  "blog": {
+    "title": "Everything, in order",
+    "subtitle": "Search, filter by topic, or just scroll around.",
+    "search": "search posts... (press /)",
+    "allTags": "all",
+    "allYears": "All years",
+    "resultCount": "{count} posts",
+    "noResult": "Mochi ate the results. Try another word.",
+    "reset": "clear filters"
+  },
+  "tags": {
+    "title": "Topics",
+    "subtitle": "The things I keep coming back to.",
+    "count": "{count} posts",
+    "empty": "No topics yet."
   },
   "post": {
-    "readMore": "Read more",
+    "readMore": "keep reading",
     "readingTime": "Reading time",
-    "publishedAt": "Published on",
+    "publishedAt": "Published",
     "tags": "Tags",
-    "noPosts": "No posts yet"
+    "noPosts": "No posts yet",
+    "toc": "on this page",
+    "prev": "older",
+    "next": "newer",
+    "backToBlog": "back to all posts",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "draft": "draft",
+    "words": "words",
+    "endNote": "you made it to the bottom",
+    "endHint": "Mochi says thanks for reading.",
+    "petMe": "pet the cat",
+    "petted": "purrrrr~"
+  },
+  "about": {
+    "kicker": "about",
+    "hello": "Hi, I'm Cody.",
+    "intro": "CodyLink is where I keep notes on data analysis, machine learning, and the small engineering details I always forget. No content calendar, no big claims — mostly me figuring things out and writing it down before I forget again.",
+    "stackTitle": "How this site works",
+    "stackNote": "Posts are plain .mdx files in content/posts/. No database, no CMS. I write a file, push it, and the site rebuilds.",
+    "contactTitle": "Say hi",
+    "contactText": "Spotted a mistake, want to argue about a chart, or just feel like saying hello? I read every message.",
+    "catTitle": "The actual boss",
+    "catRole": "Chief Distraction Officer",
+    "catBio": "Mochi supervises every draft, sits on the warm part of the laptop, and has strong opinions about cursor movement. She has never shipped a bug, technically.",
+    "catSkill": "special skills",
+    "catSkills": "sitting on keyboards · knocking pens off desks · judging my plots",
+    "startTitle": "Where to start?",
+    "startText": "Browse everything, or pick a topic that looks familiar."
   },
   "footer": {
-    "copyright": "© {year} CodyInsight. All rights reserved."
+    "copyright": "© {year} CodyLink",
+    "builtWith": "Next.js, .mdx files, and a lot of cat hair",
+    "rss": "RSS",
+    "top": "Back to top",
+    "note": "the cat has approved this footer"
+  },
+  "common": {
+    "minRead": "min read",
+    "random": "Pick for me",
+    "theme": "Toggle theme",
+    "language": "Switch language",
+    "meow": "meow"
+  },
+  "notFound": {
+    "title": "Mochi knocked this page off the desk.",
+    "description": "It's gone, or it never existed. She looks completely innocent about it.",
+    "back": "Back home"
   }
 }

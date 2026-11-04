@@ -1,18 +1,102 @@
 {
   "nav": {
     "home": "首页",
-    "blog": "博客",
+    "blog": "文章",
+    "tags": "话题",
     "about": "关于",
-    "tags": "标签"
+    "admin": "管理"
+  },
+  "home": {
+    "kicker": "就是个笔记本，真的",
+    "hello": "你好，我是 Cody。",
+    "lede": "把事情写下来，免得以后又去搜一遍同样的问题。数据、代码，还有键盘缝里偶尔出现的猫毛。",
+    "explore": "随便看看",
+    "aboutMe": "关于我",
+    "surprise": "帮我挑一篇",
+    "latest": "刚从键盘上写完的",
+    "latestHint": "通常要等 Mochi 肯从笔记本上下来才能发。",
+    "viewAll": "全部文章",
+    "statPosts": "篇文章",
+    "statTags": "个话题",
+    "statWords": "字，目前为止",
+    "empty": "还什么都没写。Mochi 一点忙也没帮上。",
+    "catCaption": "跟 Mochi 打个招呼",
+    "catHint": "她的眼睛会跟着鼠标转 · 悬停可以摸摸她",
+    "catPurr": "呼噜呼噜～",
+    "catTreat": "你找到小鱼干罐子了！",
+    "soFar": "到目前为止，这个本子有",
+    "subscribeTitle": "没有邮件订阅，说到做到。",
+    "subscribeText": "想看更新就用 RSS，或者哪天想起来了再过来逛逛。",
+    "petCount": "今天被摸了 {count} 次"
+  },
+  "blog": {
+    "title": "都在这儿了",
+    "subtitle": "可以搜、按话题筛，也可以就这么往下翻。",
+    "search": "搜文章…（按 / 聚焦）",
+    "allTags": "全部",
+    "allYears": "全部年份",
+    "resultCount": "共 {count} 篇",
+    "noResult": "结果被 Mochi 叼走了，换个词试试。",
+    "reset": "清空筛选"
+  },
+  "tags": {
+    "title": "话题",
+    "subtitle": "老是绕回来的那几件事。",
+    "count": "{count} 篇",
+    "empty": "还没有话题。"
   },
   "post": {
-    "readMore": "阅读更多",
+    "readMore": "接着看",
     "readingTime": "阅读时间",
     "publishedAt": "发布于",
     "tags": "标签",
-    "noPosts": "暂无文章"
+    "noPosts": "暂无文章",
+    "toc": "这一页里有什么",
+    "prev": "更早一篇",
+    "next": "更新一篇",
+    "backToBlog": "回到文章列表",
+    "copyLink": "复制链接",
+    "copied": "已复制",
+    "draft": "草稿",
+    "words": "字",
+    "endNote": "居然读到底了",
+    "endHint": "Mochi 说谢谢你。",
+    "petMe": "摸摸猫",
+    "petted": "呼噜呼噜～"
+  },
+  "about": {
+    "kicker": "关于",
+    "hello": "你好，我是 Cody。",
+    "intro": "CodyLink 用来放数据分析、机器学习，还有那些我总是记不住的工程小细节。没有选题日历，也不喊什么大口号 —— 基本就是自己想明白了赶紧写下来，趁还没忘。",
+    "stackTitle": "这站是怎么跑起来的",
+    "stackNote": "文章就是 content/posts/ 里的 .mdx 文件。没有数据库，也没有后台。写完推上去，站点自己重新构建。",
+    "contactTitle": "聊聊",
+    "contactText": "发现写错了、想跟我争论一张图，或者只是想打个招呼，都行。每条我都会看。",
+    "catTitle": "真正说了算的那位",
+    "catRole": "首席摸鱼官",
+    "catBio": "Mochi 负责审阅每一篇草稿，占着笔记本最暖的那块，对鼠标怎么动很有意见。严格来说，她一个 bug 都没写出过。",
+    "catSkill": "特长",
+    "catSkills": "坐在键盘上 · 把笔推下桌 · 嫌弃我画的图",
+    "startTitle": "从哪篇开始？",
+    "startText": "翻翻全部文章，或者挑个眼熟的话题。"
   },
   "footer": {
-    "copyright": "© {year} CodyInsight. All rights reserved."
+    "copyright": "© {year} CodyLink",
+    "builtWith": "Next.js、.mdx 文件，和满地猫毛",
+    "rss": "RSS",
+    "top": "回到顶部",
+    "note": "这行页脚猫已经审过了"
+  },
+  "common": {
+    "minRead": "分钟阅读",
+    "random": "帮我挑一篇",
+    "theme": "切换主题",
+    "language": "切换语言",
+    "meow": "喵"
+  },
+  "notFound": {
+    "title": "这个页面被 Mochi 推下桌了。",
+    "description": "要么没了，要么从来就没有过。她现在看起来特别无辜。",
+    "back": "回首页"
   }
 }

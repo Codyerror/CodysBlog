@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# 环境变量模板需要随仓库走，方便 clone 后照着填
+!.env.local.example
 
 # vercel
 .vercel
@@ -44,4 +46,7 @@ next-env.d.ts
 # Contentlayer
 .contentlayer
 
-.vercel
+# 本地工具数据、临时截图/计划文档、命令误产物，不推送到公开仓库
+.workbuddy/
+output/
+nul

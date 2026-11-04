@@ -1,39 +1,43 @@
 ---
-title: "Hello World"
+title: "Hello, world (and hello, Mochi)"
 date: "2025-01-16"
-summary: "This is my first blog post. Welcome to CodyInsight!"
-tags: ["blog", "introduction"]
+summary: "First post. Mostly a note about why I keep writing things down, with a cat involved."
+tags: ["blog", "meta"]
 locale: "en"
 ---
 
-## Welcome to CodyInsight
+## Why I'm doing this
 
-This is my first blog post.
+I keep fixing the same thing twice. Not because it's hard — because three months later I have no idea what past-me was thinking, and I end up googling the same error message again.
 
-### About This Blog
+So this is a notebook. When I figure something out, I write it down before I forget. No content calendar, no grand plan.
 
-Welcome to my technical blog focusing on data analysis and machine learning.
+Mochi, who is sitting on the warm part of my laptop right now, has approved this decision by falling asleep on it.
 
-### Tech Stack
+## What will be here
 
-This blog is built with:
+Mostly data analysis, a bit of machine learning, and the small engineering details that always take me an embarrassing amount of time to rediscover. If a post saves me twenty minutes six months from now, it did its job.
 
-- **Next.js 15+** - React framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS framework
-- **MDX** - Markdown superset
-- **Contentlayer** - Content management
+## How the site works
 
-### Code Example
+It's just files. Every post is a `.mdx` file in `content/posts/`. No database, no CMS, no admin panel to log into.
 
-Here's a simple code example:
-
-```javascript
-console.log('Hello World!')
+```bash
+npm run new:post -- --slug my-second-post --title "My second post"
+git add . && git commit -m "post: second one" && git push
 ```
 
-### Getting Started
+The site rebuilds, and the archive, tag pages, RSS feed and sitemap all update themselves. That's the whole workflow.
 
-I look forward to sharing more about data analysis and machine learning!
+```python
+def future_me():
+    return "thanks, probably"
 
-Feel free to leave comments below if you have any questions or suggestions.
+print(future_me())
+```
+
+## One last thing
+
+If something here is wrong, tell me. I'd rather fix it than leave a bad note lying around.
+
+Also: try moving your cursor around the cat on the home page. She watches it.

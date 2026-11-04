@@ -1,7 +1,9 @@
 import fs from 'fs'
 import path from 'path'
+import { slugify } from '@/lib/utils'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/posts')
+const VALID_LOCALES = ['zh-CN', 'en']
 
 export interface PostData {
   title: string
@@ -13,138 +15,154 @@ export interface PostData {
   slug?: string
 }
 
+export interface AdminPost extends PostData {
+  slug: string
+  filePath: string
+}
+
+type FrontmatterValue = string | string[]
+type Frontmatter = Record<string, FrontmatterValue | undefined>
+
+const asString = (value: FrontmatterValue | undefined): string =>
+  typeof value === 'string' ? value : ''
+const asTags = (value: FrontmatterValue | undefined): string[] =>
+  Array.isArray(value) ? value : typeof value === 'string' && value ? [value] : []
+
+/** 防止 slug / locale 里夹带 ../ 之类的路径。 */
+function assertSafe(locale: string, slug: string) {
+  if (!VALID_LOCALES.includes(locale)) throw new Error('Unsupported locale')
+  if (!slug || slug !== path.basename(slug) || /[\\/]/.test(slug) || slug.startsWith('.')) {
+    throw new Error('Invalid slug')
+  }
+}
+
+function yamlString(value: string) {
+  return JSON.stringify(value ?? '')
+}
+
 function formatFrontmatter(data: PostData): string {
-  const frontmatter = `---
-title: "${data.title}"
-date: "${data.date}"
-summary: "${data.summary || ''}"
-tags: [${data.tags.map(tag => `"${tag}"`).join(', ')}]
-locale: "${data.locale}"
+  return `---
+title: ${yamlString(data.title)}
+date: ${yamlString(data.date)}
+summary: ${yamlString(data.summary || '')}
+tags: [${(data.tags ?? []).map((tag) => yamlString(tag)).join(', ')}]
+locale: ${yamlString(data.locale)}
 ---
 `
-  return frontmatter
 }
 
-function parseFrontmatter(content: string): { frontmatter: any; body: string } {
-  const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
-  const match = content.match(frontmatterRegex)
-  
-  if (!match) {
-    return { frontmatter: {}, body: content }
-  }
-  
-  const frontmatterStr = match[1]
-  const body = match[2]
-  
-  const frontmatter: any = {}
-  const lines = frontmatterStr.split('\n')
-  
-  for (const line of lines) {
+function parseFrontmatter(content: string): { frontmatter: Frontmatter; body: string } {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
+  if (!match) return { frontmatter: {}, body: content }
+
+  const frontmatter: Frontmatter = {}
+  for (const line of match[1].split(/\r?\n/)) {
     const colonIndex = line.indexOf(':')
     if (colonIndex === -1) continue
-    
     const key = line.slice(0, colonIndex).trim()
-    let value: any = line.slice(colonIndex + 1).trim()
-    
-    if (value.startsWith('"') && value.endsWith('"')) {
-      value = value.slice(1, -1)
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      value = value.slice(1, -1).split(',').map((item: string) => item.trim().replace(/"/g, ''))
+    const raw = line.slice(colonIndex + 1).trim()
+
+    if (raw.startsWith('[') && raw.endsWith(']')) {
+      frontmatter[key] = raw
+        .slice(1, -1)
+        .split(',')
+        .map((item) => item.trim().replace(/^["']|["']$/g, ''))
+        .filter(Boolean)
+    } else {
+      let value: FrontmatterValue
+      try {
+        const parsed: unknown = JSON.parse(raw)
+        value = typeof parsed === 'string' ? parsed : raw
+      } catch {
+        value = raw.replace(/^["']|["']$/g, '')
+      }
+      frontmatter[key] = value
     }
-    
-    frontmatter[key] = value
   }
-  
-  return { frontmatter, body }
+  return { frontmatter, body: match[2] }
 }
 
-export function getAllPosts(): any[] {
-  const posts: any[] = []
-  const locales = fs.readdirSync(CONTENT_DIR)
-  
-  for (const locale of locales) {
+export function getAllPosts(): AdminPost[] {
+  const posts: AdminPost[] = []
+  if (!fs.existsSync(CONTENT_DIR)) return posts
+
+  for (const locale of fs.readdirSync(CONTENT_DIR)) {
     const localeDir = path.join(CONTENT_DIR, locale)
     if (!fs.statSync(localeDir).isDirectory()) continue
-    
-    const files = fs.readdirSync(localeDir)
-    for (const file of files) {
+
+    for (const file of fs.readdirSync(localeDir)) {
       if (!file.endsWith('.mdx')) continue
-      
       const filePath = path.join(localeDir, file)
-      const content = fs.readFileSync(filePath, 'utf-8')
-      const { frontmatter, body } = parseFrontmatter(content)
-      const slug = file.replace('.mdx', '')
-      
+      const { frontmatter, body } = parseFrontmatter(fs.readFileSync(filePath, 'utf-8'))
       posts.push({
-        ...frontmatter,
-        slug,
+        title: asString(frontmatter.title),
+        date: asString(frontmatter.date),
+        summary: asString(frontmatter.summary),
+        tags: asTags(frontmatter.tags),
+        locale: asString(frontmatter.locale) || locale,
         content: body,
-        filePath
+        slug: file.replace(/\.mdx$/, ''),
+        filePath,
       })
     }
   }
-  
+
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
 export function getPostBySlug(locale: string, slug: string): PostData | null {
+  assertSafe(locale, slug)
   const filePath = path.join(CONTENT_DIR, locale, `${slug}.mdx`)
-  
   if (!fs.existsSync(filePath)) return null
-  
-  const content = fs.readFileSync(filePath, 'utf-8')
-  const { frontmatter, body } = parseFrontmatter(content)
-  
+
+  const { frontmatter, body } = parseFrontmatter(fs.readFileSync(filePath, 'utf-8'))
   return {
-    title: frontmatter.title || '',
-    date: frontmatter.date || '',
-    summary: frontmatter.summary || '',
-    tags: frontmatter.tags || [],
-    locale: frontmatter.locale || locale,
+    title: asString(frontmatter.title),
+    date: asString(frontmatter.date),
+    summary: asString(frontmatter.summary),
+    tags: asTags(frontmatter.tags),
+    locale: asString(frontmatter.locale) || locale,
     content: body,
-    slug
+    slug,
   }
 }
 
-export function createPost(data: PostData): void {
+export function createPost(data: PostData): string {
+  const slug = data.slug?.trim() || slugify(data.title) || `post-${Date.now()}`
+  assertSafe(data.locale, slug)
+
   const localeDir = path.join(CONTENT_DIR, data.locale)
-  if (!fs.existsSync(localeDir)) {
-    fs.mkdirSync(localeDir, { recursive: true })
-  }
-  
-  const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
+  if (!fs.existsSync(localeDir)) fs.mkdirSync(localeDir, { recursive: true })
+
   const filePath = path.join(localeDir, `${slug}.mdx`)
-  
-  const fullContent = formatFrontmatter(data) + data.content
-  fs.writeFileSync(filePath, fullContent, 'utf-8')
+  if (fs.existsSync(filePath)) throw new Error('A post with this slug already exists')
+
+  fs.writeFileSync(filePath, formatFrontmatter(data) + data.content, 'utf-8')
+  return slug
 }
 
 export function updatePost(locale: string, slug: string, data: Partial<PostData>): void {
+  assertSafe(locale, slug)
   const filePath = path.join(CONTENT_DIR, locale, `${slug}.mdx`)
-  
   if (!fs.existsSync(filePath)) return
-  
-  const existingContent = fs.readFileSync(filePath, 'utf-8')
-  const { frontmatter: existingFrontmatter } = parseFrontmatter(existingContent)
-  
-  const updatedData = {
-    title: data.title || existingFrontmatter.title,
-    date: data.date || existingFrontmatter.date,
-    summary: data.summary !== undefined ? data.summary : existingFrontmatter.summary,
-    tags: data.tags || existingFrontmatter.tags,
-    locale: data.locale || existingFrontmatter.locale,
-    content: data.content !== undefined ? data.content : existingContent.split('---\n').slice(2).join('---\n')
+
+  const { frontmatter, body } = parseFrontmatter(fs.readFileSync(filePath, 'utf-8'))
+  const updated: PostData = {
+    title: data.title ?? asString(frontmatter.title),
+    date: data.date ?? asString(frontmatter.date),
+    summary: data.summary ?? asString(frontmatter.summary),
+    tags: data.tags ?? asTags(frontmatter.tags),
+    locale: data.locale ?? asString(frontmatter.locale) ?? locale,
+    content: data.content ?? body,
   }
-  
-  const fullContent = formatFrontmatter(updatedData) + updatedData.content
-  fs.writeFileSync(filePath, fullContent, 'utf-8')
+
+  fs.writeFileSync(filePath, formatFrontmatter(updated) + updated.content, 'utf-8')
 }
 
 export function deletePost(locale: string, slug: string): boolean {
+  assertSafe(locale, slug)
   const filePath = path.join(CONTENT_DIR, locale, `${slug}.mdx`)
-  
   if (!fs.existsSync(filePath)) return false
-  
   fs.unlinkSync(filePath)
   return true
 }

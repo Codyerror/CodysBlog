@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save } from 'lucide-react'
 
@@ -9,6 +9,7 @@ export default function NewPostPage({ params: { locale } }: { params: { locale: 
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     date: new Date().toISOString().split('T')[0],
     summary: '',
     tags: '',
@@ -71,9 +72,26 @@ export default function NewPostPage({ params: { locale } }: { params: { locale: 
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
             placeholder="输入文章标题"
           />
+        </div>
+
+        <div>
+          <label htmlFor="slug" className="block text-sm font-medium mb-2">
+            固定链接 slug <span className="text-muted font-normal">（选填，建议英文短词，留空则由标题生成）</span>
+          </label>
+          <input
+            type="text"
+            id="slug"
+            name="slug"
+            value={formData.slug}
+            onChange={handleChange}
+            pattern="[A-Za-z0-9\u4e00-\u9fa5_-]+"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent font-mono text-sm"
+            placeholder="例如: my-first-post"
+          />
+          <p className="mt-1.5 text-xs text-muted">决定网址 /{locale}/blog/<span className="font-mono text-brand">{formData.slug || 'my-first-post'}</span>，发布后尽量不要再改。</p>
         </div>
 
         <div>
@@ -87,7 +105,7 @@ export default function NewPostPage({ params: { locale } }: { params: { locale: 
             value={formData.date}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
           />
         </div>
 
@@ -101,7 +119,7 @@ export default function NewPostPage({ params: { locale } }: { params: { locale: 
             value={formData.summary}
             onChange={handleChange}
             rows={2}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
             placeholder="输入文章摘要"
           />
         </div>
@@ -116,7 +134,7 @@ export default function NewPostPage({ params: { locale } }: { params: { locale: 
             name="tags"
             value={formData.tags}
             onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
             placeholder="例如: 博客, 技术, 教程"
           />
         </div>
@@ -132,7 +150,7 @@ export default function NewPostPage({ params: { locale } }: { params: { locale: 
             onChange={handleChange}
             rows={20}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent font-mono"
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent font-mono"
             placeholder="输入 Markdown 内容..."
           />
         </div>
@@ -141,7 +159,7 @@ export default function NewPostPage({ params: { locale } }: { params: { locale: 
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50"
+            className="flex items-center gap-2 bg-brand text-white dark:text-[#06201c] px-6 py-2 rounded-lg hover:opacity-90 disabled:opacity-50"
           >
             <Save size={20} />
             {loading ? '保存中...' : '保存'}

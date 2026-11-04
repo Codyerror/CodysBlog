@@ -1,96 +1,630 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #2563eb;
-  --color-primary-dark: #1d4ed8;
-  --color-background: #ffffff;
-  --color-foreground: #171717;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  --font-family-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-family-mono: ui-monospace, system-ui, monospace;
-}
+/* next-themes 用 class 策略，Tailwind 4 默认 dark: 走媒体查询，这里改成跟随 .dark */
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --paper: #fbf7ee;
+  --surface: #fffdf7;
+  --surface-2: #f5eddd;
+  --ink: #2e2923;
+  --ink-soft: #5d5449;
+  --muted: #8d8273;
+  --line: #ded1b9;
+  --brand: #df7a3c;
+  --brand-strong: #b45525;
+  --brand-soft: #fbe6d0;
+  --accent: #4d8f87;
+  --violet: #8872b6;
+  --sticker: #e7d9be;
+  --shadow: 3px 4px 0 var(--sticker);
+
+  /* 猫咪插画配色：motions.cat 的米杏底 + 淡奶黄平涂 + 深紫褐手绘线 */
+  --cat-line: #4b3a43;
+  --cat-fur: #efe1a9;
+  --cat-fur-2: #d3c081;
+  --cat-inner: #e7b3a9;
+  --cat-belly: #fff4dd;
+  --cat-spark: #fff4dd;
+  --cat-fish: #e9dc86;
+  --cat-box: #e7c99c;
+  --cat-box-2: #f4dfba;
+
+  --code-bg: #262b33;
+  --code-ink: #f0e7d8;
+  --font-hand: "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", "PingFang SC", "Microsoft YaHei", cursive;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  color-scheme: dark;
+  --paper: #171b21;
+  --surface: #20262f;
+  --surface-2: #2b323d;
+  --ink: #f5ecdd;
+  --ink-soft: #cfc4b3;
+  --muted: #9a9082;
+  --line: #3b434e;
+  --brand: #f0a264;
+  --brand-strong: #ffbd86;
+  --brand-soft: #3d3027;
+  --accent: #79c2b8;
+  --violet: #bba5e8;
+  --sticker: #10151b;
+  --shadow: 3px 4px 0 var(--sticker);
+
+  /* 暗色下换成浅米线稿猫（对应 motions.cat 那些白线动图） */
+  --cat-line: #f2e4c8;
+  --cat-fur: #313840;
+  --cat-fur-2: #4a5259;
+  --cat-inner: #6b555c;
+  --cat-belly: #3d444c;
+  --cat-spark: #313840;
+  --cat-fish: #4a4636;
+  --cat-box: #3a3b3a;
+  --cat-box-2: #46463f;
+
+  --code-bg: #12171e;
+  --code-ink: #f0e7d8;
 }
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-inksoft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brandstrong: var(--brand-strong);
+  --color-brandsoft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-violet: var(--violet);
+  --font-sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, "SFMono-Regular", monospace;
+}
+
+* { border-color: var(--line); }
+
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-.prose {
-  @apply max-w-none text-gray-700 dark:text-gray-300 leading-relaxed;
+::selection { background: var(--brand-soft); color: var(--brand-strong); }
+
+:focus-visible {
+  outline: 2px dashed var(--brand);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  @apply text-gray-900 dark:text-gray-100 font-bold mt-8 mb-4;
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border: 3px solid var(--paper);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+
+/* ---------- 背景：纸纹 + 几枚很淡的猫爪印 ---------- */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background-image: radial-gradient(var(--grid-dot, rgba(120, 96, 62, .11)) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.dark .site-backdrop { --grid-dot: rgba(220, 200, 170, .07); }
+.site-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70rem 40rem at 50% -20%, var(--brand-soft), transparent 70%);
+  opacity: .5;
+}
+.site-backdrop .backdrop-paw {
+  position: absolute;
+  width: 62px;
+  color: var(--brand);
+  opacity: .075;
+}
+.dark .site-backdrop .backdrop-paw { opacity: .10; }
+
+/* ---------- 手写体 / 贴纸元件 ---------- */
+.hand { font-family: var(--font-hand); }
+
+.gradient-text {
+  color: var(--brand-strong);
+  font-family: var(--font-hand);
+  text-decoration: underline wavy var(--brand);
+  text-underline-offset: 7px;
+  text-decoration-thickness: 2px;
 }
 
-.prose h1 { @apply text-4xl; }
-.prose h2 { @apply text-3xl; }
-.prose h3 { @apply text-2xl; }
-
-.prose p {
-  @apply my-4;
+.glass-card {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
 }
 
-.prose a {
-  @apply text-blue-600 dark:text-blue-400 hover:underline;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-hand);
+  font-size: .98rem;
+  color: var(--brand-strong);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 7px;
+  margin: 5px 10px 0 1px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow:
+    -6px -5px 0 -1.8px var(--brand),
+    0 -7px 0 -1.8px var(--brand),
+    6px -5px 0 -1.8px var(--brand);
 }
 
-.prose code {
-  @apply px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm;
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .28rem .7rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: .75rem;
+  line-height: 1.4;
+  transition: all .18s ease;
+}
+.chip:hover, .chip[data-active="true"] {
+  color: var(--brand-strong);
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  transform: translateY(-2px) rotate(-1.5deg);
+  box-shadow: 2px 3px 0 var(--sticker);
 }
 
-.prose pre {
-  @apply my-4 p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto;
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .7rem 1.35rem;
+  border-radius: 12px;
+  border: 2px solid var(--ink);
+  font-weight: 700;
+  font-size: .92rem;
+  color: var(--surface);
+  background: var(--brand);
+  box-shadow: 3px 4px 0 var(--ink);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.dark .btn-primary { color: #23201c; border-color: #f0a264; }
+.btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 5px 6px 0 var(--ink); background: var(--brand-strong); }
+.btn-primary:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .7rem 1.35rem;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: .92rem;
+  box-shadow: 3px 4px 0 var(--sticker);
+  transition: all .18s ease;
+}
+.btn-outline:hover { border-color: var(--brand); color: var(--brand-strong); transform: translate(-2px, -2px); box-shadow: 5px 6px 0 var(--sticker); }
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 11px;
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  background: var(--surface);
+  transition: all .18s ease;
+}
+.icon-btn:hover { color: var(--brand-strong); border-color: var(--brand); transform: translateY(-2px) rotate(-5deg); box-shadow: 2px 3px 0 var(--sticker); }
+
+/* 导航 hover 冒出一枚小爪印 */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 6px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow:
+    -4px -4px 0 -1.4px var(--brand),
+    0 -5px 0 -1.4px var(--brand),
+    4px -4px 0 -1.4px var(--brand);
+  opacity: 0;
+  transform: translateX(-50%) scale(.4);
+  transition: opacity .2s ease, transform .2s cubic-bezier(.22, 1.5, .4, 1);
+  pointer-events: none;
+}
+.nav-link:hover::after { opacity: .85; transform: translateX(-50%) scale(1); }
+.nav-link[data-active="true"]::after { display: none; }
+
+/* 卡片：hover 轻微歪一下，右上角的探头猫滑出来 */
+.post-card { position: relative; overflow: hidden; }
+.post-card:hover {
+  transform: translate(-2px, -3px) rotate(-.5deg);
+  border-color: var(--brand);
+  box-shadow: 6px 8px 0 var(--sticker);
+}
+.post-card .card-arrow { transition: transform .25s ease; }
+.post-card:hover .card-arrow { transform: translate(3px, -3px) rotate(12deg); }
+.post-card .card-peek {
+  position: absolute;
+  right: 6px;
+  bottom: -60px;
+  width: 56px;
+  color: var(--brand);
+  transition: bottom .32s cubic-bezier(.22, 1.4, .4, 1);
+  pointer-events: none;
+  z-index: 2;
+}
+.post-card:hover .card-peek { bottom: -14px; }
+.post-card .card-art { transform: translateX(-50%); transition: transform .35s ease; }
+.post-card:hover .card-art { transform: translateX(-50%) translateY(-5px) rotate(2deg); }
+
+.fade-up { animation: fade-up .7s cubic-bezier(.22,1,.36,1) both; }
+.delay-1 { animation-delay: .09s; }
+.delay-2 { animation-delay: .18s; }
+.delay-3 { animation-delay: .27s; }
+.delay-4 { animation-delay: .36s; }
+
+/* ---------- 猫咪插画：EveOneCat 式手绘猫 + 魔性循环 ---------- */
+/* 放在 components layer 里，Tailwind 的 w-* / h-* 工具类才能覆盖默认尺寸 */
+@layer components {
+  .cat-svg { display: block; width: 100%; height: auto; overflow: visible; }
 }
 
-.prose pre code {
-  @apply bg-transparent p-0 text-gray-100;
+/* ---------- 自定义猫图片 ----------
+   仅当 site-config.ts 的 cat.artwork.enabled = true 时才会渲染 .cat-art。
+   两层 background-image 支持亮/暗各一张；GIF 会自己循环播放。 */
+.cat-art { position: relative; }
+.cat-art-layer {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transition: transform .28s cubic-bezier(.22, 1.3, .4, 1);
+}
+.cat-art[data-cat-dark="true"] .cat-art-dark { opacity: 0; }
+.dark .cat-art[data-cat-dark="true"] .cat-art-dark { opacity: 1; }
+.dark .cat-art[data-cat-dark="true"] .cat-art-light { opacity: 0; }
+.cat-svg:hover .cat-art-layer { transform: scale(1.035) rotate(-1.2deg); }
+
+/* 小点眼跟着鼠标转 */
+.cat-pupils {
+  transform: translate(var(--cat-eye-x, 0px), var(--cat-eye-y, 0px));
+  transition: transform .13s ease-out;
+}
+.cat-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cat-blink 7.5s ease-in-out infinite;
 }
 
-.prose blockquote {
-  @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-6;
+/* 一坨猫的日常：大部分时间安静呼吸，隔几秒突然抖一下毛 */
+.cat-body,
+.cat-noodle,
+.cat-bob,
+.cat-paws,
+.cat-fish-wiggle,
+.cat-tail {
+  transform-box: fill-box;
+}
+.cat-body {
+  transform-origin: 50% 94%;
+  animation: cat-jiggle 3.6s ease-in-out infinite;
+}
+.cat-noodle {
+  transform-origin: 50% 88%;
+  animation: cat-noodle 4.4s ease-in-out infinite;
+}
+.cat-bob {
+  transform-origin: 50% 100%;
+  animation: cat-bob 2.4s ease-in-out infinite;
+}
+.cat-paws {
+  transform-origin: 50% 100%;
+  animation: cat-paws 2.8s ease-in-out infinite;
+}
+.cat-fish-wiggle {
+  transform-origin: 15% 50%;
+  animation: cat-fish-wiggle 2.2s ease-in-out infinite;
+}
+.cat-tail {
+  transform-origin: 10% 90%;
+  animation: tail-wag 3.6s ease-in-out infinite;
+}
+.cat-zzz { animation: float-z 3.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* 悬停到任意一只猫：这只炸毛，猫头高频微抖 */
+.cat-svg:hover .cat-body,
+.cat-svg:hover .cat-noodle { animation-duration: .75s; }
+.cat-svg:hover .cat-bob,
+.cat-svg:hover .cat-paws { animation-duration: .8s; }
+.cat-svg:hover .cat-tail { animation-duration: .5s; }
+.cat-svg:hover .cat-head { animation: cat-shiver .22s linear infinite; }
+.cat-pettable:hover .cat-tail { animation-duration: .5s; }
+.cat-pettable:hover .cat-eyes { animation-duration: 3s; }
+/* 浏览器支持 :has() 时，全站所有猫陪着一起抖 —— 像 motions.cat 一整页 GIF */
+@supports selector(:has(*)) {
+  html:has(.cat-svg:hover) .cat-body,
+  html:has(.cat-svg:hover) .cat-noodle { animation-duration: .9s; }
+  html:has(.cat-svg:hover) .cat-tail { animation-duration: .6s; }
 }
 
-.prose ul, .prose ol {
-  @apply my-4 pl-6;
+/* 跟随鼠标的猫爪光标 */
+.cat-cursor {
+  position: fixed;
+  left: 0; top: 0;
+  width: 26px; height: 26px;
+  z-index: 90;
+  pointer-events: none;
+  color: var(--brand);
+  opacity: .5;
+  will-change: transform;
+  transition: opacity .2s ease, color .2s ease;
+}
+.cat-cursor-inner {
+  transform: scale(.85) rotate(-15deg);
+  transition: transform .24s cubic-bezier(.22, 1.5, .4, 1);
+}
+.cat-cursor[data-active="true"] { opacity: .95; color: var(--brand-strong); }
+.cat-cursor[data-active="true"] .cat-cursor-inner { transform: scale(1.45) rotate(16deg); }
+.cat-cursor[data-hidden="true"] { opacity: 0; }
+
+/* 点击留下的猫爪印 */
+.cat-print {
+  position: fixed;
+  width: 22px; height: 22px;
+  z-index: 88;
+  pointer-events: none;
+  color: var(--brand);
+  animation: paw-fade 1s ease-out forwards;
+}
+@keyframes paw-fade {
+  0% { opacity: .6; transform: translate(-50%, -50%) scale(.5) rotate(var(--rot, 0deg)); }
+  100% { opacity: 0; transform: translate(-50%, -100%) scale(1.2) rotate(var(--rot, 0deg)); }
 }
 
-.prose ul { @apply list-disc; }
-.prose ol { @apply list-decimal; }
-
-.prose li {
-  @apply my-2;
+/* 彩蛋：飘起来的小鱼干 / 爱心 */
+.cat-party {
+  position: fixed;
+  z-index: 95;
+  pointer-events: none;
+  font-size: 24px;
+  animation: cat-float-up 2.4s ease-out forwards;
+}
+@keyframes cat-float-up {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(.5) rotate(0deg); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -170px) scale(1.15) rotate(var(--spin, 30deg)); }
 }
 
-.prose img {
-  @apply rounded-lg my-6;
+/* 摸猫时的爱心 */
+.pet-heart {
+  position: absolute;
+  color: var(--brand);
+  font-size: 18px;
+  pointer-events: none;
+  animation: heart-up 1.15s ease-out forwards;
+}
+@keyframes heart-up {
+  0% { opacity: 0; transform: translateY(0) scale(.5); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-64px) scale(1.2) rotate(18deg); }
 }
 
-.prose table {
-  @apply w-full my-6 border-collapse;
+/* 手写便签字条 */
+.tape-note {
+  position: relative;
+  background: var(--brand-soft);
+  border: 1.5px dashed var(--brand);
+  border-radius: 10px;
+  transform: rotate(-1.2deg);
 }
 
-.prose th, .prose td {
-  @apply border border-gray-300 dark:border-gray-600 px-4 py-2;
+/* ---------- 正文排版 ---------- */
+.prose-cody {
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.9;
+  letter-spacing: .01em;
+}
+.prose-cody > *:first-child { margin-top: 0; }
+.prose-cody h1, .prose-cody h2, .prose-cody h3, .prose-cody h4 {
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.35;
+  scroll-margin-top: 6.5rem;
+}
+.prose-cody h1 { font-size: 2rem; margin: 2.5rem 0 1rem; }
+.prose-cody h2 {
+  font-size: 1.55rem;
+  margin: 2.6rem 0 1rem;
+  padding-left: .85rem;
+  border-left: 4px solid var(--brand);
+  border-radius: 2px;
+}
+.prose-cody h3 { font-size: 1.22rem; margin: 2rem 0 .75rem; }
+.prose-cody h2 a, .prose-cody h3 a { color: inherit; text-decoration: none; }
+.prose-cody p { margin: 1.1rem 0; }
+.prose-cody strong { color: var(--ink); font-weight: 680; }
+.prose-cody a { color: var(--brand-strong); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--brand) 45%, transparent); text-underline-offset: 3px; }
+.prose-cody a:hover { text-decoration-color: var(--brand); }
+.prose-cody ul, .prose-cody ol { margin: 1.1rem 0; padding-left: 1.5rem; }
+.prose-cody ul { list-style: disc; }
+.prose-cody ol { list-style: decimal; }
+.prose-cody li { margin: .4rem 0; padding-left: .25rem; }
+.prose-cody li::marker { color: var(--brand); }
+.prose-cody blockquote {
+  margin: 1.8rem 0;
+  padding: .85rem 1.2rem;
+  border: 1.5px dashed var(--brand);
+  border-left: 4px solid var(--brand);
+  border-radius: 4px 12px 12px 4px;
+  background: var(--brand-soft);
+  color: var(--ink-soft);
+  transform: rotate(-.35deg);
+  box-shadow: 3px 3px 0 var(--sticker);
+}
+.prose-cody blockquote p { margin: 0; }
+.prose-cody hr { margin: 2.5rem 0; border: 0; border-top: 2px dashed var(--line); }
+.prose-cody img { border: 2px solid var(--line); border-radius: 12px; margin: 1.8rem auto; max-width: 100%; height: auto; box-shadow: var(--shadow); }
+.prose-cody table { width: 100%; margin: 1.6rem 0; border-collapse: collapse; font-size: .93rem; display: block; overflow-x: auto; }
+.prose-cody th, .prose-cody td { border: 1.5px solid var(--line); padding: .6rem .85rem; text-align: left; }
+.prose-cody th { background: var(--surface-2); color: var(--ink); font-weight: 650; }
+.prose-cody :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: .88em;
+  padding: .16rem .42rem;
+  border-radius: 6px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  word-break: break-word;
+}
+.prose-cody pre {
+  position: relative;
+  margin: 1.6rem 0;
+  padding: 1.15rem 1.25rem;
+  border-radius: 12px;
+  border: 2px solid var(--ink);
+  background: var(--code-bg);
+  color: var(--code-ink);
+  overflow-x: auto;
+  font-size: .88rem;
+  line-height: 1.7;
+  box-shadow: var(--shadow);
+}
+.prose-cody pre code { font-family: var(--font-mono); background: none; padding: 0; color: inherit; font-size: inherit; }
+
+/* rehype-highlight 只加 class，不自带样式，这里补一套明暗配色 */
+.hljs-comment, .hljs-quote { color: #9aa7b4; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-type { color: #c792ea; }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute { color: #a5d6a7; }
+.hljs-number, .hljs-symbol, .hljs-bullet { color: #f5b451; }
+.hljs-title, .hljs-section, .hljs-name, .hljs-selector-id { color: #82d8f7; }
+.hljs-built_in, .hljs-class .hljs-title, .hljs-function .hljs-title { color: #7ee0c9; }
+.hljs-variable, .hljs-template-variable, .hljs-attr { color: #ffb4a2; }
+.hljs-meta, .hljs-deletion { color: #e6a1a1; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }
+
+.code-copy-btn {
+  position: absolute;
+  top: .6rem;
+  right: .6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .3rem .6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.1);
+  color: var(--code-ink);
+  font-size: .72rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .2s ease, background .2s ease;
+}
+.prose-cody pre:hover .code-copy-btn, .code-copy-btn:focus-visible { opacity: 1; }
+.code-copy-btn:hover { background: rgba(255,255,255,.2); }
+
+/* 保留旧 .prose 类名兼容 */
+.prose { color: var(--ink-soft); line-height: 1.9; }
+.prose h1, .prose h2, .prose h3 { color: var(--ink); font-weight: 700; }
+.prose a { color: var(--brand-strong); }
+
+.reading-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 4px;
+  z-index: 60;
+  background: var(--brand);
+  border-radius: 0 4px 4px 0;
+  transition: width .1s linear;
+}
+.reading-progress::after {
+  content: "";
+  position: absolute;
+  right: -7px; top: -5px;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow:
+    -8px -6px 0 -3px var(--brand),
+    -2px -9px 0 -3px var(--brand),
+    5px -6px 0 -3px var(--brand);
 }
 
-.prose th {
-  @apply bg-gray-100 dark:bg-gray-800 font-bold;
-}
+@keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes float-slow { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-9px) rotate(2deg); } }
+@keyframes cat-blink { 0%, 91%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.08); } 97% { transform: scaleY(1); } }
+@keyframes tail-wag { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(8deg); } }
+@keyframes float-z { 0%,100% { transform: translateY(0); opacity: .7; } 50% { transform: translateY(-5px); opacity: 1; } }
 
-.prose hr {
-  @apply my-8 border-gray-300 dark:border-gray-600;
+/* 猫咪循环：静止 → 突然抖毛 → 回弹，模仿 motions.cat 那种短 GIF 的节奏 */
+@keyframes cat-jiggle {
+  0%, 70%, 100% { transform: rotate(0deg) scale(1, 1); }
+  74% { transform: rotate(-1.4deg) scale(1.02, .98); }
+  78% { transform: rotate(1.2deg) scale(.985, 1.02); }
+  82% { transform: rotate(-1deg) scale(1.015, .99); }
+  86% { transform: rotate(.6deg) scale(.995, 1.005); }
+  90% { transform: rotate(0deg) scale(1, 1); }
+}
+@keyframes cat-noodle {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); }
+  40% { transform: scale(1.035, .965) rotate(-.6deg); }
+  70% { transform: scale(.975, 1.03) rotate(.5deg); }
+}
+@keyframes cat-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes cat-paws { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
+@keyframes cat-fish-wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+/* 用独立的 translate 属性，避免覆盖猫头 <g> 上的 SVG transform="translate() scale()" */
+@keyframes cat-shiver { 0%, 100% { translate: -1px 0; } 50% { translate: 1px 0; } }
+
+.animate-float { animation: float-slow 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .cat-cursor, .cat-print, .cat-party { display: none !important; }
 }
