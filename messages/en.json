@@ -67,18 +67,13 @@
   "about": {
     "kicker": "about",
     "hello": "Hi, I'm Cody.",
-    "intro": "CodyLink is where I keep notes on data analysis, machine learning, and the small engineering details I always forget. No content calendar, no big claims — mostly me figuring things out and writing it down before I forget again.",
-    "stackTitle": "How this site works",
-    "stackNote": "Posts are plain .mdx files in content/posts/. No database, no CMS. I write a file, push it, and the site rebuilds.",
-    "contactTitle": "Say hi",
-    "contactText": "Spotted a mistake, want to argue about a chart, or just feel like saying hello? I read every message.",
-    "catTitle": "The actual boss",
-    "catRole": "Chief Distraction Officer",
-    "catBio": "Mochi supervises every draft, sits on the warm part of the laptop, and has strong opinions about cursor movement. She has never shipped a bug, technically.",
-    "catSkill": "special skills",
-    "catSkills": "sitting on keyboards · knocking pens off desks · judging my plots",
-    "startTitle": "Where to start?",
-    "startText": "Browse everything, or pick a topic that looks familiar."
+    "intro": "I work on AI/LLM applications, quant trading, and the tooling that ties it together. This page is a map of what I'm into and the docs I keep coming back to.",
+    "focusTitle": "What I'm into",
+    "focusNote": "The directions I keep investing time in — not a roadmap, just where my attention goes.",
+    "linksTitle": "Friend links",
+    "linksNote": "AI dev docs and technical resources I actually use. Open one and start building.",
+    "ctaTitle": "Want more?",
+    "ctaText": "These notes are the longer version of the above."
   },
   "footer": {
     "copyright": "© {year} CodyLink",
