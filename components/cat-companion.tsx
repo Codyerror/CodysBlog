@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { CatPaw } from './cats'
+import { MouseCursor } from './cats'
 
 /**
  * 全站鼠标互动层，只在有鼠标、且用户没开「减少动态效果」时启用。
@@ -25,6 +25,7 @@ export function CatCompanion() {
     if (!cursor) return
 
     const root = document.documentElement
+    root.classList.add('mouse-cursor-on')
     const temporary: HTMLElement[] = []
     let frame = 0
     let targetX = -100
@@ -45,11 +46,25 @@ export function CatCompanion() {
     frame = requestAnimationFrame(animate)
 
     const onMove = (event: MouseEvent) => {
-      // 猫眼：以视口中心为原点，瞳孔最多偏移 3px
-      root.style.setProperty('--cat-eye-x', `${((event.clientX / window.innerWidth - 0.5) * 6).toFixed(2)}px`)
-      root.style.setProperty('--cat-eye-y', `${((event.clientY / window.innerHeight - 0.5) * 5).toFixed(2)}px`)
-      targetX = event.clientX + 13
-      targetY = event.clientY + 15
+      // 以视口中心为原点的归一化坐标（-1 ~ 1）
+      const nx = (event.clientX / window.innerWidth - 0.5) * 2
+      const ny = (event.clientY / window.innerHeight - 0.5) * 2
+
+      // 猫眼：瞳孔最多偏移 3px
+      root.style.setProperty('--cat-eye-x', `${(nx * 3).toFixed(2)}px`)
+      root.style.setProperty('--cat-eye-y', `${(ny * 2.5).toFixed(2)}px`)
+      // 猫头：整体朝鼠标方向极轻微地转 / 歪
+      root.style.setProperty('--cat-head-x', nx.toFixed(3))
+      root.style.setProperty('--cat-head-y', ny.toFixed(3))
+      // 背景：跟随鼠标的柔光位置（百分比）+ 网点视差偏移
+      root.style.setProperty('--pointer-x', `${(event.clientX / window.innerWidth * 100).toFixed(2)}%`)
+      root.style.setProperty('--pointer-y', `${(event.clientY / window.innerHeight * 100).toFixed(2)}%`)
+      root.style.setProperty('--bg-ox', `${(nx * 7).toFixed(1)}px`)
+      root.style.setProperty('--bg-oy', `${(ny * 7).toFixed(1)}px`)
+      root.style.setProperty('--pointer-active', '1')
+
+      targetX = event.clientX
+      targetY = event.clientY
       cursor.dataset.hidden = 'false'
     }
 
@@ -66,6 +81,9 @@ export function CatCompanion() {
       cursor.dataset.active = 'false'
       root.style.setProperty('--cat-eye-x', '0px')
       root.style.setProperty('--cat-eye-y', '0px')
+      root.style.setProperty('--cat-head-x', '0')
+      root.style.setProperty('--cat-head-y', '0')
+      root.style.setProperty('--pointer-active', '0')
     }
 
     const spawnPrint = (clientX: number, clientY: number) => {
@@ -155,6 +173,7 @@ export function CatCompanion() {
 
     return () => {
       cancelAnimationFrame(frame)
+      root.classList.remove('mouse-cursor-on')
       window.removeEventListener('mousemove', onMove)
       document.removeEventListener('mouseover', onOver)
       document.removeEventListener('mouseout', onLeave)
@@ -167,9 +186,9 @@ export function CatCompanion() {
   }, [])
 
   return (
-    <div ref={cursorRef} className="cat-cursor" data-hidden="true" data-active="false" aria-hidden="true">
-      <div className="cat-cursor-inner">
-        <CatPaw />
+    <div ref={cursorRef} className="mouse-cursor" data-hidden="true" data-active="false" aria-hidden="true">
+      <div className="mouse-cursor-inner">
+        <MouseCursor />
       </div>
     </div>
   )

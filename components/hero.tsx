@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowRight, Shuffle, Rss } from 'lucide-react'
-import { CatSitting, CatFish, CatPaw } from './cats'
+import { CatSitting, CatPaw } from './cats'
+import { FishFeed } from './fish-feed'
 import { getMessage } from '@/lib/i18n'
 import { siteConfig } from '@/lib/site-config'
 
@@ -134,7 +135,7 @@ export function Hero({ locale, stats, slugs }: { locale: string; stats: Stats; s
                 <p className="hand text-base text-brandstrong leading-tight">{t('home.catCaption')}</p>
                 <p className="mt-1 text-[11px] text-muted">{siteConfig.cat.name} · {siteConfig.cat.title}</p>
               </div>
-              <CatFish className="w-14 mt-1 -rotate-12 shrink-0" />
+              <FishFeed />
             </div>
 
             {/* 猫本体：悬停/点击都会被撸 */}

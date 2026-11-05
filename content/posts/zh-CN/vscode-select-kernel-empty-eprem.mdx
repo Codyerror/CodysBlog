@@ -1,0 +1,140 @@
+---
+title: "Select Kernel 是空的，问题却不在 Jupyter"
+date: "2026-11-05"
+summary: "VS Code 的 Select Kernel 列表全空。ipykernel 崩溃只是表层，真正的根因是扩展宿主 Node 进程无法 stat 符号链接形式的 .vscode 目录。"
+tags: ["VS Code", "Jupyter", "Windows", "排查笔记"]
+locale: "zh-CN"
+---
+
+## 症状
+
+我在 VS Code 1.145.0 里打开 `E:\mycode\AI\call_api.ipynb`，点右上角的 Select Kernel，列表一片空白。不是只有默认的 Python 环境没出现，是连一个可选条目都没有。
+
+`%APPDATA%\jupyter\kernels` 下我自定义的 kernelspec 明明还在。手动输入环境名也没用，它不会因为我打对了名字就凭空变出一个内核。
+
+第一反应当然是 Jupyter 又抽风了。这个判断后来只对了一半。
+
+## 先走的弯路：ipykernel 6.4.0
+
+venv 里的 Python 是 3.12.3，装着的 ipykernel 却是 6.4.0。这个版本还在用 `imp` 模块，而 `imp` 在 Python 3.12 已经被移除，于是内核一启动就崩：
+
+```text
+File "...\ipykernel\iostream.py", line 9, in <module>
+    from imp import lock_held as import_lock_held
+ModuleNotFoundError: No module named 'imp'
+```
+
+这条报错很干脆，修起来也不复杂：把 ipykernel 升到 7.4.0，顺带升到 ipython 9.18.1、jupyter_client 8.10.0，再用这个 venv 的解释器重新注册 kernelspec。
+
+做完之后，内核这一层确实能用了：用 jupyter_client 按 kernelspec 名字启动内核、执行一个单元，返回 `ok`。
+
+但 Select Kernel 还是空的。
+
+到这一步，问题就已经不在内核了。列表里没有东西，往往意味着根本没人去填这个列表。
+
+## 真正的根因：扩展宿主读不了 .vscode
+
+我打开 `exthost.log`，看到了这一段：
+
+```text
+[info] ExtensionService#_doActivateExtension ms-toolsai.jupyter, activationEvent: 'onNotebook:jupyter-notebook'
+[error] Activating extension ms-toolsai.jupyter failed due to an error:
+[error] Error: EPERM: operation not permitted, stat 'c:\Users\<user>\.vscode'
+```
+
+同一时刻，gitlens、sqltools、claude-code、remote-wsl 也都在报 EPERM。这不是 Jupyter 扩展自己坏了，是所有用户级扩展都激活失败。
+
+再看目录本身：`C:\Users\<user>\.vscode` 是一个指向 `E:\CAppData\.vscode` 的目录符号链接。PowerShell 能正常进去，但 Node/libuv 对它做 stat 会返回 EPERM。VS Code 的扩展宿主正是一个 Node 进程，读不到这个路径，扩展就激活不了；Jupyter 扩展根本没启动，Select Kernel 自然是空的。
+
+所以这是两个层次的问题：ipykernel 6.4.0 是真实的、必须修的缺陷，但它不是列表为空的根因。
+
+## 怎么确认
+
+先看日志。VS Code 的日志目录通常在 `%APPDATA%\Code\logs` 下，按时间找到最新的那次窗口，`exthost.log` 就在里面。搜 `EPERM` 或者 `failed due to an error`，比盯着界面猜快得多。
+
+然后做一次 Node 侧的对比实验：
+
+```js
+const fs = require('fs')
+
+const link = `${process.env.USERPROFILE}/.vscode`
+const target = 'E:/CAppData/.vscode'
+
+for (const p of [link, target]) {
+  try {
+    fs.statSync(p)
+    console.log('STAT OK', p)
+    const entries = fs.readdirSync(p)
+    console.log('READDIR OK', p, entries.length)
+  } catch (err) {
+    console.log(err.code, p)
+  }
+}
+```
+
+结果很直接：`C:/Users/<user>/.vscode` 报 EPERM，`E:/CAppData/.vscode` 一切正常。
+
+再用 PowerShell 确认它到底是什么类型的链接：
+
+```text
+Get-Item (Join-Path $env:USERPROFILE '.vscode') | Select-Object FullName, LinkType, Target
+```
+
+`LinkType` 显示 `SymbolicLink`。
+
+## 修复：把符号链接换成目录联接
+
+目标目录不动，只换掉用户目录下这个入口。操作前先退出 VS Code。
+
+```text
+$p = Join-Path $env:USERPROFILE '.vscode'
+$target = 'E:\CAppData\.vscode'
+
+# 先确认目标目录真的存在，再动链接
+Test-Path $target
+(Get-Item $p -Force).Delete()
+New-Item -ItemType Junction -Path $p -Target $target
+```
+
+这里要强调一句：`.Delete()` 删除的只是链接本身，`E:\CAppData\.vscode` 里的扩展文件一个都不会少。
+
+换成 Junction 之后，同样的 stat 就不再报 EPERM，扩展宿主能正常读目录。
+
+## 验证
+
+先看链接类型：
+
+```text
+Get-Item (Join-Path $env:USERPROFILE '.vscode') | Select-Object FullName, LinkType, Target
+```
+
+`LinkType` 变成 `Junction`。
+
+再用 Node 复跑上面的脚本，三项都通过：`STAT OK`、`READDIR OK`，扩展目录能读出 35 个条目。
+
+然后看 VS Code 自己认不认扩展：
+
+```bash
+code --list-extensions --show-versions
+```
+
+能正常列出 `jupyter@2025.9.1` 这些扩展，说明扩展宿主已经恢复读取能力。
+
+最后回到内核层：用 jupyter_client 按 kernelspec 名字启动内核，执行一个单元，返回 `ok`。
+
+## 还剩下的两件事
+
+第一，图形界面里的 Select Kernel 没法用脚本验证。重启 VS Code 之后需要自己点一次，确认列表里出现内核。这是唯一必须人工确认的环节。
+
+第二，把用户级 `.vscode` 放在 E 盘、靠链接指过去，本身就是一个容易复发的地雷。重装系统、迁移目录、换一台机器，都可能再遇到同一种 EPERM。可以考虑把扩展目录迁回默认位置，或者改用配置项指定扩展目录。
+
+## 经验
+
+这次最值得记下来的不是那条 PowerShell 命令，而是排查顺序：
+
+1. 内核启动失败，先修 ipykernel、看内核自己的报错；
+2. 内核能启动但 UI 里没有内核，别再怀疑 kernelspec；
+3. 打开 `exthost.log`，确认扩展到底有没有激活；
+4. 如果多个扩展同时 EPERM，直接查文件系统，不要逐个怀疑扩展。
+
+一句话：遇到扩展整体不工作，先看 `exthost.log`。界面上的症状经常离根因很远，日志里的 EPERM 才是能直接定位的那一层。

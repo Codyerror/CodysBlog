@@ -31,6 +31,11 @@
   --cat-box: #e7c99c;
   --cat-box-2: #f4dfba;
 
+  /* 卡通老鼠光标配色：灰褐毛 + 深线 + 粉鼻 */
+  --mouse-fur: #d6ccbf;
+  --mouse-line: #4b3a43;
+  --mouse-pink: #e8a9a0;
+
   --code-bg: #262b33;
   --code-ink: #f0e7d8;
   --font-hand: "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", "PingFang SC", "Microsoft YaHei", cursive;
@@ -63,6 +68,10 @@
   --cat-fish: #4a4636;
   --cat-box: #3a3b3a;
   --cat-box-2: #46463f;
+
+  --mouse-fur: #4c525a;
+  --mouse-line: #f2e4c8;
+  --mouse-pink: #c98b86;
 
   --code-bg: #12171e;
   --code-ink: #f0e7d8;
@@ -114,15 +123,22 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--brand); }
 
-/* ---------- 背景：纸纹 + 几枚很淡的猫爪印 ---------- */
+/* ---------- 背景：纸纹 + 几枚很淡的猫爪印 + 跟随鼠标的互动光 ---------- */
 .site-backdrop {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
+}
+/* 网点层：随鼠标做极轻微视差 */
+.site-backdrop .backdrop-dots {
+  position: absolute;
+  inset: -32px;
   background-image: radial-gradient(var(--grid-dot, rgba(120, 96, 62, .11)) 1px, transparent 1px);
   background-size: 22px 22px;
+  transform: translate3d(var(--bg-ox, 0px), var(--bg-oy, 0px), 0);
+  transition: transform .3s ease-out;
 }
 .dark .site-backdrop { --grid-dot: rgba(220, 200, 170, .07); }
 .site-backdrop::after {
@@ -131,6 +147,24 @@ body {
   inset: 0;
   background: radial-gradient(70rem 40rem at 50% -20%, var(--brand-soft), transparent 70%);
   opacity: .5;
+}
+/* 跟随鼠标的柔光：鼠标在页面上移动时才浮现（brand 色调，multiply / screen 适配明暗） */
+.site-backdrop .backdrop-glow {
+  position: absolute;
+  left: var(--pointer-x, 50%);
+  top: var(--pointer-y, 50%);
+  width: 32rem;
+  height: 32rem;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand) 20%, transparent), transparent 62%);
+  opacity: var(--pointer-active, 0);
+  transition: opacity .45s ease;
+  mix-blend-mode: multiply;
+}
+.dark .site-backdrop .backdrop-glow {
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand) 34%, transparent), transparent 62%);
+  mix-blend-mode: screen;
 }
 .site-backdrop .backdrop-paw {
   position: absolute;
@@ -339,6 +373,15 @@ body {
   animation: cat-blink 7.5s ease-in-out infinite;
 }
 
+/* 整颗猫头朝「老鼠光标」方向极轻微地转 / 歪——动作幅度很小，只是「在盯着看」的感觉。
+   放在 CatHead 内层 g 上（外层 g 已有 SVG transform 做定位，不能在这上面加 CSS transform）。 */
+.cat-head-turn {
+  transform-box: fill-box;
+  transform-origin: 50% 58%;
+  transform: rotate(calc(var(--cat-head-x, 0) * 2.4deg)) translate(0, calc(var(--cat-head-y, 0) * -1.4px));
+  transition: transform .12s ease-out;
+}
+
 /* 一坨猫的日常：大部分时间安静呼吸，隔几秒突然抖一下毛 */
 .cat-body,
 .cat-noodle,
@@ -390,25 +433,41 @@ body {
   html:has(.cat-svg:hover) .cat-tail { animation-duration: .6s; }
 }
 
-/* 跟随鼠标的猫爪光标 */
-.cat-cursor {
+/* 卡通老鼠光标：代替系统鼠标，猫会盯着它看 */
+html.mouse-cursor-on, html.mouse-cursor-on * { cursor: none; }
+html.mouse-cursor-on input[type="text"],
+html.mouse-cursor-on input:not([type]),
+html.mouse-cursor-on input[type="search"],
+html.mouse-cursor-on input[type="email"],
+html.mouse-cursor-on textarea { cursor: text; }
+
+.mouse-cursor {
   position: fixed;
   left: 0; top: 0;
-  width: 26px; height: 26px;
-  z-index: 90;
+  width: 34px; height: 34px;
+  z-index: 92;
   pointer-events: none;
-  color: var(--brand);
-  opacity: .5;
+  color: var(--mouse-line);
+  opacity: .95;
   will-change: transform;
   transition: opacity .2s ease, color .2s ease;
 }
-.cat-cursor-inner {
-  transform: scale(.85) rotate(-15deg);
-  transition: transform .24s cubic-bezier(.22, 1.5, .4, 1);
+.mouse-cursor-inner {
+  transform: translate(-30%, -24%);
+  transition: transform .25s cubic-bezier(.22, 1.5, .4, 1);
 }
-.cat-cursor[data-active="true"] { opacity: .95; color: var(--brand-strong); }
-.cat-cursor[data-active="true"] .cat-cursor-inner { transform: scale(1.45) rotate(16deg); }
-.cat-cursor[data-hidden="true"] { opacity: 0; }
+.mouse-cursor[data-active="true"] { color: var(--brand-strong); }
+.mouse-cursor[data-active="true"] .mouse-cursor-inner { transform: translate(-30%, -24%) scale(1.28) rotate(-12deg); }
+.mouse-cursor[data-hidden="true"] { opacity: 0; }
+.mouse-tail {
+  transform-box: fill-box;
+  transform-origin: 92% 85%;
+  animation: mouse-tail-wag 2.6s ease-in-out infinite;
+}
+@keyframes mouse-tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(13deg); }
+}
 
 /* 点击留下的猫爪印 */
 .cat-print {
@@ -450,6 +509,48 @@ body {
   0% { opacity: 0; transform: translateY(0) scale(.5); }
   20% { opacity: 1; }
   100% { opacity: 0; transform: translateY(-64px) scale(1.2) rotate(18deg); }
+}
+
+/* 可拖拽喂猫的小鱼（主页右上角） */
+.fish-feed {
+  position: absolute;
+  top: .4rem;
+  right: .6rem;
+  z-index: 30;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cat-fish);
+  cursor: grab;
+  touch-action: none;
+  filter: drop-shadow(2px 3px 0 var(--sticker));
+  transition: transform .2s ease, opacity .25s ease;
+}
+.fish-feed:focus-visible { outline: 2px dashed var(--brand); outline-offset: 4px; border-radius: 10px; }
+.fish-feed:active, .fish-feed.is-dragging { cursor: grabbing; }
+.fish-feed.is-dragging { z-index: 100; transform: scale(1.12) rotate(-6deg); }
+.fish-feed.is-near { transform: scale(1.22) rotate(11deg); }
+.fish-feed.is-eating {
+  transition: transform .45s ease-in, opacity .45s ease-in;
+  transform: translate(-50%, -50%) scale(.08) rotate(50deg);
+  opacity: 0;
+}
+.fish-feed.is-hidden { opacity: 0; }
+.fish-tip {
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-hand);
+  font-size: .72rem;
+  color: var(--brand-strong);
+  white-space: nowrap;
+  animation: fish-bob 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes fish-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
 }
 
 /* 手写便签字条 */
@@ -626,5 +727,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .cat-cursor, .cat-print, .cat-party { display: none !important; }
+  .mouse-cursor, .cat-print, .cat-party { display: none !important; }
+  .cat-head-turn { transform: none !important; }
 }

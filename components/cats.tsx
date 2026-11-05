@@ -163,6 +163,7 @@ function CatHead({
 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`} className="cat-head">
+      <g className="cat-head-turn">
       {/* 耳朵先画，压在头下面 */}
       <path d="M22 34 C18 21 19 11 25 9 C31 11 38 18 42 26 Z" fill={FUR} stroke={LINE} strokeWidth="3.4" strokeLinejoin="round" />
       <path d="M58 26 C62 18 69 11 75 9 C81 11 82 21 78 34 Z" fill={FUR} stroke={LINE} strokeWidth="3.4" strokeLinejoin="round" />
@@ -201,6 +202,7 @@ function CatHead({
       <g fill="none" stroke={LINE} strokeWidth="2" strokeLinecap="round" opacity=".55">
         <path d="M21 55 L11 52 M21 60 L12 61" />
         <path d="M79 55 L89 52 M79 60 L88 61" />
+      </g>
       </g>
     </g>
   )
@@ -330,6 +332,41 @@ export function CatPaw({ className, style }: CatProps) {
         <ellipse cx="53" cy="25" rx="6.4" ry="8.6" transform="rotate(19 53 25)" />
       </g>
     </CatSvg>
+  )
+}
+
+/** 卡通小老鼠光标：代替系统鼠标，猫会盯着它看。手写粗线、圆耳粉鼻、尾巴摆。 */
+export function MouseCursor({ className, style }: CatProps) {
+  return (
+    <svg
+      viewBox="0 0 44 44"
+      className={`cat-svg ${className ?? ''}`}
+      style={style}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g className="mouse-tail">
+        <path d="M30 30 C40 31 43 22 38 17" fill="none" stroke="var(--mouse-line)" strokeWidth="2.6" strokeLinecap="round" />
+      </g>
+      <ellipse cx="22" cy="28" rx="13" ry="11" fill="var(--mouse-fur)" stroke="var(--mouse-line)" strokeWidth="3" />
+      <circle cx="12" cy="15" r="6.5" fill="var(--mouse-fur)" stroke="var(--mouse-line)" strokeWidth="3" />
+      <circle cx="32" cy="15" r="6.5" fill="var(--mouse-fur)" stroke="var(--mouse-line)" strokeWidth="3" />
+      <circle cx="12" cy="15" r="3.1" fill="var(--mouse-pink)" />
+      <circle cx="32" cy="15" r="3.1" fill="var(--mouse-pink)" />
+      <g fill="var(--mouse-line)">
+        <circle cx="17" cy="25" r="1.9" />
+        <circle cx="27" cy="25" r="1.9" />
+      </g>
+      <circle cx="22" cy="29.5" r="2.2" fill="var(--mouse-pink)" />
+      <g fill="none" stroke="var(--mouse-line)" strokeWidth="1.6" strokeLinecap="round" opacity=".55">
+        <path d="M14 30 L6 28 M14 32 L6 33" />
+        <path d="M30 30 L38 28 M30 32 L38 33" />
+      </g>
+      <g fill="var(--mouse-fur)" stroke="var(--mouse-line)" strokeWidth="2.4">
+        <ellipse cx="16" cy="38" rx="3.2" ry="2.2" />
+        <ellipse cx="28" cy="38" rx="3.2" ry="2.2" />
+      </g>
+    </svg>
   )
 }
 

@@ -14,6 +14,8 @@ const paws: { left: string; top: string; rotate: number; size: number }[] = [
 export function SiteBackdrop() {
   return (
     <div className="site-backdrop" aria-hidden="true">
+      <div className="backdrop-dots" />
+      <div className="backdrop-glow" />
       {paws.map((paw, i) => (
         <CatPaw
           key={i}
